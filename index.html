@@ -3,6 +3,7 @@
 
 <head>
     <title>TO-Do'S</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js"></script>
 </head>
 
 <body>
@@ -24,55 +25,7 @@
 
 
 
-        /*
-         // The Store should have four parts
-          // 1. The state
-          // 2. Get the state.
-          // 3. Listen to changes on the state.
-          // 4. Update the state
-        
-        */
-        ///////////////////////////////////////////////////////
-        // Create Store is a library code not application code
-        const CreateStore = (reducer) => {
 
-            // Store current state 
-            let state
-            // subscribed listeners array
-            let listners = []
-
-            // function to return the Store state
-            const getState = () => state
-
-
-            // function to subscribe a listener 
-            const subscribe = (listner) => {
-                listners.push(listner)
-                return () => {
-                    listners = listners.filter((l) => l !== listner);
-                }
-
-
-            }
-
-            // dispatch to update Store-state 
-            const dispatch = (action) => {
-                state = reducer(state, action);
-                listners.forEach((listner) => listner());
-            }
-
-            // return the functions can be invoked from the createstore
-            return {
-                getState,
-                subscribe,
-                dispatch,
-            }
-
-
-
-
-        }
-        ///////////////////////////////////////////////
 
 
 
@@ -167,19 +120,17 @@
 
 
 
-        //create the root reducer function 
-        function app(state = {}, action) {
-            return {
-                todos: todos(state.todos, action),
-                lifegoals: lifegoals(state.lifegoals, action),
-            }
-        }
+
+
 
         /*
-        the reducer that was passed to createStore() is called with the current state tree and the action...this updates the state tree
-        passing the todos function as reducer function -- now pass the root reducer function to be responsible of the which reducer function will be called 
+        use Redux create store function and comine reducer 
         */
-        const Store = CreateStore(app);
+        const Store = Redux.createStore(Redux.combineReducers({
+            todos,
+            lifegoals,
+        }))
+
 
         Store.subscribe(() => {
             console.log('the new state is ', Store.getState());
@@ -258,13 +209,13 @@
         }
 
         function add_todo_Dom(todo) {
-           
+
 
             const node = document.createElement('li');
 
             var checkbox = document.createElement('input');
             checkbox.type = "checkbox";
-            checkbox.checked =  todo.complete;
+            checkbox.checked = todo.complete;
             checkbox.id = todo.id;
 
             checkbox.addEventListener('change', toggleTodo);
@@ -275,14 +226,14 @@
             const text = document.createTextNode(todo.name);
             node.appendChild(text);
 
-           const removebtn = document.createElement('button')
-           removebtn.innerHTML = 'X';
-           removebtn.addEventListener('click', ()=>{
-            Store.dispatch(removeTodoAction(todo.id));
-           })
+            const removebtn = document.createElement('button')
+            removebtn.innerHTML = 'X';
+            removebtn.addEventListener('click', () => {
+                Store.dispatch(removeTodoAction(todo.id));
+            })
 
 
-           node.appendChild(removebtn);
+            node.appendChild(removebtn);
 
 
 
@@ -297,11 +248,11 @@
             node.appendChild(text);
 
             const removebtn = document.createElement('button')
-           removebtn.innerHTML = 'X';
-           removebtn.addEventListener('click', ()=>{
-            Store.dispatch(removeGoalAction(goal.id));
-           })
-           node.appendChild(removebtn);
+            removebtn.innerHTML = 'X';
+            removebtn.addEventListener('click', () => {
+                Store.dispatch(removeGoalAction(goal.id));
+            })
+            node.appendChild(removebtn);
             document.getElementById('goalslist').appendChild(node);
         }
 
