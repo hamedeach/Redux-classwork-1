@@ -95,6 +95,7 @@
     }
 
     //es6 syntax to write nested functions
+    //middleware function will be used by the redux to check before dispatch 
     const checker = (store) => (next) => (action) => {
 
       if (action.type === ADD_TODO && action.todo.name.toLowerCase().includes('bitcoin')) {
