@@ -93,10 +93,24 @@
         }
       }
 
+      const checker =(store)=>(next)=>(action)=>{
+       if(action.type=== ADD_TODO)
+       {
+           alert(JSON.stringify(action.todo));
+
+       }
+       else if( action.type===ADD_GOAL)
+       {
+        alert(JSON.stringify(action.goal));
+
+       }
+        return next(action);
+          
+      }
       const store = Redux.createStore(Redux.combineReducers({
         todos,
         goals,
-      }))
+      }),Redux.applyMiddleware(checker));
 
       store.subscribe(() => {
         const {
