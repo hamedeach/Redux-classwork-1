@@ -9,7 +9,7 @@
     -->
     <script src='https://unpkg.com/react@16.3.0-alpha.1/umd/react.development.js'></script>
     <script src='https://unpkg.com/react-dom@16.3.0-alpha.1/umd/react-dom.development.js'></script>
-    
+
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 
@@ -284,10 +284,33 @@
         }
 
         class Todos extends React.Component {
+            additem =(e)=>{
+                e.preventDefault();
+                const name = this.input.value;
+                this.input.value='';
+
+                this.props.Store.dispatch(addTodoAction(
+                    {
+                        name,
+                        complete:false,
+                        id:generateId(),
+                    }
+                ))
+
+
+            }
+
             render() {
                 return (
-                    <div> TODO's
-                        <List />
+                    <div>
+                        <h1> To-do's List </h1>
+                        <input
+                            type='text'
+                            placeholder='Add a todo'
+                            ref={(input) => this.input = input}
+                        />
+                        <button onClick={this.additem}>Add Todo</button>
+
                     </div>
                 )
             }
@@ -311,7 +334,7 @@
                 return (
                     <div>
                         <Goals />
-                        <Todos />
+                        <Todos Store={this.props.Store}/>
 
                     </div>
                 )
@@ -321,7 +344,7 @@
         }
 
         ReactDOM.render(
-            <App />,
+            <App Store={store} />,
             document.getElementById('app')
         )
 
