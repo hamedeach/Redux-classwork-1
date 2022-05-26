@@ -351,11 +351,20 @@
         }
 
         class App extends React.Component {
+            componentDidMount() {
+                const  Store  = this.props.Store;
+                Store.subscribe(()=>this.forceUpdate());
+            }
+
             render() {
+              
+                const { Store } = this.props
+                console.log(Store);
+                const { todos, goals } = Store.getState()
                 return (
                     <div>
-                        <Goals Store={this.props.Store} />
-                        <Todos Store={this.props.Store} />
+                        <Goals goals={goals} Store={this.props.Store} />
+                        <Todos todos={todos} Store={this.props.Store} />
 
                     </div>
                 )
