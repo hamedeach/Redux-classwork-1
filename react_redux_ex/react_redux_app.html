@@ -284,16 +284,16 @@
         }
 
         class Todos extends React.Component {
-            additem =(e)=>{
+            additem = (e) => {
                 e.preventDefault();
                 const name = this.input.value;
-                this.input.value='';
+                this.input.value = '';
 
                 this.props.Store.dispatch(addTodoAction(
                     {
                         name,
-                        complete:false,
-                        id:generateId(),
+                        complete: false,
+                        id: generateId(),
                     }
                 ))
 
@@ -319,9 +319,30 @@
         }
 
         class Goals extends React.Component {
+
+            additem = (e) => {
+                e.preventDefault();
+                const name = this.input.value;
+                this.input.value = '';
+
+                this.props.Store.dispatch(addGoalAction(
+                    {
+                        id: generateId(),
+                        name,
+                    }
+                ))
+
+            }
             render() {
                 return (
-                    <div> Goal's
+                    <div>
+                        <h1> Life Goals List</h1>
+                        <input
+                            type='text'
+                            placeholder='add a goal'
+                            ref={(input) => this.input = input}
+                        />
+                        <button onClick={this.additem}>Add Goal</button>
                         <List />
                     </div>
                 )
@@ -333,8 +354,8 @@
             render() {
                 return (
                     <div>
-                        <Goals />
-                        <Todos Store={this.props.Store}/>
+                        <Goals Store={this.props.Store} />
+                        <Todos Store={this.props.Store} />
 
                     </div>
                 )
