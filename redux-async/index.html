@@ -90,6 +90,7 @@
             }
         }
 
+        /* define the reducers*/
         function todos(state = [], action) {
             switch (action.type) {
                 case ADD_TODO:
@@ -121,6 +122,13 @@
             }
         }
 
+        function loading(state = true, action) {
+            switch (action.type) {
+                case RECEIVE_DATA: return false;
+                default: return true;
+            }
+        }
+
         //es6 syntax to write nested functions
         //middleware function will be used by the redux to check before dispatch 
         const checker = (store) => (next) => (action) => {
@@ -148,6 +156,7 @@
             {
                 todos,
                 goals,
+                loading,
             })
             , Redux.applyMiddleware(checker, logger));
 
@@ -397,14 +406,14 @@
 
         class App extends React.Component {
             componentDidMount() {
-                const {Store} = this.props;
+                const { Store } = this.props;
 
 
                 Promise.all([
                     API.fetchTodos(),
                     API.fetchGoals()
                 ]).then(([todos, goals]) => {
-                    console.log(todos,goals);
+                    console.log(todos, goals);
                     Store.dispatch(receiveDataAction(todos, goals))
                 })
                 Store.subscribe(() => this.forceUpdate());
@@ -414,14 +423,18 @@
 
                 const { Store } = this.props
                 console.log(Store);
-                const { todos, goals } = Store.getState()
-                return (
-                    <div>
-                        <Goals goals={goals} Store={this.props.Store} />
-                        <Todos todos={todos} Store={this.props.Store} />
+                const { todos, goals, loading } = Store.getState()
+                console.log(loading);
+                if (loading)
+                    return (<h3>Loading</h3>)
+                else
+                    return (
+                        <div>
+                            <Goals goals={goals} Store={this.props.Store} />
+                            <Todos todos={todos} Store={this.props.Store} />
 
-                    </div>
-                )
+                        </div>
+                    )
             }
 
 
