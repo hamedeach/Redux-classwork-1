@@ -122,10 +122,10 @@
             }
         }
 
-        function loading(state = true, action) {
+        function loading(state = false, action) {
             switch (action.type) {
-                case RECEIVE_DATA: return false;
-                default: return true;
+                case RECEIVE_DATA: return true;
+                default: return state;
             }
         }
 
@@ -166,6 +166,7 @@
             const {
                 goals,
                 todos,
+                loading,
             } = store.getState()
 
             console.log("get state !!")
@@ -339,11 +340,19 @@
             }
 
             removeItem = (todo) => {
+                console.log('delete *********************** ')
                 this.props.Store.dispatch(removeTodoAction(todo.id))
+                return API.deleteTodo(todo.id).catch(() => {
+                    this.props.Store.dispatch(addTodoAction(todo));
+                    alert('error, failed to delete !!');
+
+                })
+
+
             }
 
             toggleItem = (id) => {
-                console.log('ghghghghghg')
+                //console.log('ghghghghghg')
                 this.props.Store.dispatch(toggleTodoAction(id));
             }
 
@@ -384,6 +393,13 @@
 
             removeItem = (goal) => {
                 this.props.Store.dispatch(removeGoalAction(goal.id));
+
+                return API.deleteGoal(goal).catch(()=>{
+                    this.props.Store.dispatch(addGoalAction(goal));
+                    alert('Failed to remove, try again !!');
+                })
+
+           
             }
 
 
@@ -425,7 +441,7 @@
                 console.log(Store);
                 const { todos, goals, loading } = Store.getState()
                 console.log(loading);
-                if (loading)
+                if (!loading)
                     return (<h3>Loading</h3>)
                 else
                     return (
