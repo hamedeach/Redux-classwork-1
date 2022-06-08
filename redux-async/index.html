@@ -328,15 +328,19 @@
             additem = (e) => {
                 e.preventDefault();
                 const name = this.input.value;
-                this.input.value = '';
 
-                this.props.Store.dispatch(addTodoAction(
-                    {
-                        name,
-                        complete: false,
-                        id: generateId(),
-                    }
-                ))
+                return API.saveTodo(name)
+                .then((newtodo)=>{
+                    this.input.value = '';
+                    this.props.Store.dispatch(addTodoAction(newtodo));
+
+                })
+                .catch(()=>{
+                    alert('failed to add a to do');
+                });
+               
+
+               
             }
 
             removeItem = (todo) => {
@@ -355,7 +359,7 @@
                 //console.log('ghghghghghg')
                 this.props.Store.dispatch(toggleTodoAction(id));
 
-                return API.saveTodoToggle(id).catch(()=>{
+                return API.saveTodoToggle(id).catch(() => {
                     this.props.Store.dispatch(toggleTodoAction(id));
                     alert('Failed to toggle !!');
 
@@ -386,26 +390,32 @@
             additem = (e) => {
                 e.preventDefault();
                 const name = this.input.value;
-                this.input.value = '';
 
-                this.props.Store.dispatch(addGoalAction(
-                    {
-                        id: generateId(),
-                        name,
-                    }
-                ))
+                return API.saveGoal(name)
+                    .then((newgoal) => {
+                        this.input.value = '';
+                        this.props.Store.dispatch(addGoalAction(newgoal));
+
+
+                    })
+                    .catch(() => {
+                        alert('failed to save the goal');
+                    });
+
+
+
             }
 
 
             removeItem = (goal) => {
                 this.props.Store.dispatch(removeGoalAction(goal.id));
 
-                return API.deleteGoal(goal).catch(()=>{
+                return API.deleteGoal(goal).catch(() => {
                     this.props.Store.dispatch(addGoalAction(goal));
                     alert('Failed to remove, try again !!');
                 })
 
-           
+
             }
 
 
