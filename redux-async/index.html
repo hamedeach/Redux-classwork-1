@@ -94,19 +94,47 @@
             }
         }
 
-
-        function handleDeleteTodo(todo){
-            return (dispatch)=>{
-                console.log('handle delete todo *************');
-                console.log(todo);
+        /** thunk functions**/
+        function handleDeleteTodo(todo) {
+            return (dispatch) => {
 
                 dispatch(removeTodoAction(todo.id))
-                return API.deleteTodo(todo.id).catch(()=>{
+                return API.deleteTodo(todo.id).catch(() => {
                     dispatch(addTodoAction(todo))
                     alert('Failed to remove a todo !!')
                 })
             }
         }
+
+        function handleAddGoal(name, cb) {
+            return (dispatch) => {
+                console.log('********* add new goal !!!')
+                return API.saveGoal(name)
+                    .then((newgoal) => {
+                        dispatch(addGoalAction(newgoal));
+                        cb();
+                    })
+                    .catch(() => {
+                        alert('failed to save the goal');
+                    });
+
+            }
+
+        }
+
+        function handleDeleteGoal(goal) {
+            return (dispatch) => {
+                dispatch(removeGoalAction(goal.id));
+                return API.deleteGoal(goal).catch(() => {
+                    dispatch(addGoalAction(goal));
+                    alert('Failed to remove, try again !!');
+                })
+
+            }
+
+
+        }
+
 
         /* define the reducers*/
         function todos(state = [], action) {
@@ -114,11 +142,7 @@
                 case ADD_TODO:
                     return state.concat([action.todo])
                 case REMOVE_TODO:
-                    console.log('******************* todo reducer delete a todo');
-                    console.log(action);
-                    const updatedState = state.filter((todo) => todo.id !== action.id);
-                    console.log(updatedState);
-                    return updatedState;
+                    return state.filter((todo) => todo.id !== action.id);
                 case TOGGLE_TODO:
                     return state.map((todo) => todo.id !== action.id ? todo :
                         Object.assign({}, todo, {
@@ -180,7 +204,7 @@
                 goals,
                 loading,
             })
-            , Redux.applyMiddleware(ReduxThunk.default,checker, logger));
+            , Redux.applyMiddleware(ReduxThunk.default, checker, logger));
 
 
 
@@ -207,6 +231,7 @@
 
 
         // DOM code
+
 
 
 
@@ -314,6 +339,8 @@
             document.getElementById('goals')
                 .append(node)
         }
+
+
     </script>
 
     <hr />
@@ -352,23 +379,23 @@
                 const name = this.input.value;
 
                 return API.saveTodo(name)
-                .then((newtodo)=>{
-                    this.input.value = '';
-                    this.props.Store.dispatch(addTodoAction(newtodo));
+                    .then((newtodo) => {
+                        this.input.value = '';
+                        this.props.Store.dispatch(addTodoAction(newtodo));
 
-                })
-                .catch(()=>{
-                    alert('failed to add a to do');
-                });
-               
+                    })
+                    .catch(() => {
+                        alert('failed to add a to do');
+                    });
 
-               
+
+
             }
 
             removeItem = (todo) => {
-            
+
                 this.props.Store.dispatch(handleDeleteTodo(todo));
-               
+
 
 
             }
@@ -408,30 +435,14 @@
             additem = (e) => {
                 e.preventDefault();
                 const name = this.input.value;
-
-                return API.saveGoal(name)
-                    .then((newgoal) => {
-                        this.input.value = '';
-                        this.props.Store.dispatch(addGoalAction(newgoal));
-
-
-                    })
-                    .catch(() => {
-                        alert('failed to save the goal');
-                    });
-
-
-
+                this.props.Store.dispatch(handleAddGoal(name, () => { this.input.value = '' }));
             }
 
 
             removeItem = (goal) => {
-                this.props.Store.dispatch(removeGoalAction(goal.id));
+                this.props.Store.dispatch(handleDeleteGoal(goal));
 
-                return API.deleteGoal(goal).catch(() => {
-                    this.props.Store.dispatch(addGoalAction(goal));
-                    alert('Failed to remove, try again !!');
-                })
+              
 
 
             }
