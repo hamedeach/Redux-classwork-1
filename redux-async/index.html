@@ -16,6 +16,10 @@
        API simulate data on a server 
     -->
     <script src="https://tylermcginnis.com/goals-todos-api/index.js"></script>
+    <!--
+        Redux Thunk script
+    -->
+    <script src='https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js'></script>
 </head>
 
 <body>
@@ -90,13 +94,31 @@
             }
         }
 
+
+        function handleDeleteTodo(todo){
+            return (dispatch)=>{
+                console.log('handle delete todo *************');
+                console.log(todo);
+
+                dispatch(removeTodoAction(todo.id))
+                return API.deleteTodo(todo.id).catch(()=>{
+                    dispatch(addTodoAction(todo))
+                    alert('Failed to remove a todo !!')
+                })
+            }
+        }
+
         /* define the reducers*/
         function todos(state = [], action) {
             switch (action.type) {
                 case ADD_TODO:
                     return state.concat([action.todo])
                 case REMOVE_TODO:
-                    return state.filter((todo) => todo.id !== action.id)
+                    console.log('******************* todo reducer delete a todo');
+                    console.log(action);
+                    const updatedState = state.filter((todo) => todo.id !== action.id);
+                    console.log(updatedState);
+                    return updatedState;
                 case TOGGLE_TODO:
                     return state.map((todo) => todo.id !== action.id ? todo :
                         Object.assign({}, todo, {
@@ -158,7 +180,7 @@
                 goals,
                 loading,
             })
-            , Redux.applyMiddleware(checker, logger));
+            , Redux.applyMiddleware(ReduxThunk.default,checker, logger));
 
 
 
@@ -344,13 +366,9 @@
             }
 
             removeItem = (todo) => {
-                console.log('delete *********************** ')
-                this.props.Store.dispatch(removeTodoAction(todo.id))
-                return API.deleteTodo(todo.id).catch(() => {
-                    this.props.Store.dispatch(addTodoAction(todo));
-                    alert('error, failed to delete !!');
-
-                })
+            
+                this.props.Store.dispatch(handleDeleteTodo(todo));
+               
 
 
             }
