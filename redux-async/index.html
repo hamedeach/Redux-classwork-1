@@ -161,6 +161,18 @@
 
         }
 
+        function handleInitialData(){
+            return(dispatch)=>{
+               return Promise.all([
+                    API.fetchTodos(),
+                    API.fetchGoals()
+                ]).then(([todos, goals]) => {
+                    console.log(todos, goals);
+                    dispatch(receiveDataAction(todos, goals))
+                })
+
+            }
+        }
 
         ////////////////////////////////////////
 
@@ -476,15 +488,10 @@
         class App extends React.Component {
             componentDidMount() {
                 const { Store } = this.props;
+                Store.dispatch(handleInitialData());
 
 
-                Promise.all([
-                    API.fetchTodos(),
-                    API.fetchGoals()
-                ]).then(([todos, goals]) => {
-                    console.log(todos, goals);
-                    Store.dispatch(receiveDataAction(todos, goals))
-                })
+              
                 Store.subscribe(() => this.forceUpdate());
             }
 
